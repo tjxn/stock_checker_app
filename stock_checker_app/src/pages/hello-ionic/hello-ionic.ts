@@ -23,13 +23,13 @@ export class HelloIonicPage {
 
                this.stockPrice = obj.l;
                this.profit ='$' + ( this.stockPrice*143108.00 - 21773.29).toLocaleString();
-               alert();
             },
         err => console.error(err),
         );
   }
 
   constructor(private googleFinaceService: GoogleFinanceService) {
+    setInterval(this.getStockInfo.bind(this), 1000);
   }
 
 
