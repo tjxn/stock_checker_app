@@ -3,23 +3,22 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Hello Ionic</ion-title>
   </ion-navbar>
 </ion-header>
 
 
 <ion-content padding>
 
-  <h3>Welcome to your first Ionic app!</h3>
+<div class="stock-price">
+  <p>{{stockPrice}}</p>
+</div>
 
-  <p>
-    This starter project is our way of helping you get a functional app running in record time.
-  </p>
-  <p>
-    Follow along on the tutorial section of the Ionic docs!
-  </p>
-  <p>
-    <button ion-button color="primary" menuToggle>Toggle Menu</button>
-  </p>
+<div class="profit">
+  <p>{{profit}}</p>
+</div>
+
+<div class="refresh-btn">
+    <button ion-button class="refresh" (click)="getStockInfo()">Refresh</button>
+</div>
 
 </ion-content>

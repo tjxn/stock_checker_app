@@ -1,3 +1,16 @@
-page-hello-ionic {
+div.stock-price, div.profit {
+    text-align: center;
+    font-size: 6vw;
+}
 
+div.refresh-btn{
+    height: 10%;
+    width: 30%;
+    margin:auto;
+}
+
+.refresh {
+    height: 100%;
+    width: 100%;
+    margin:auto;
 }
