@@ -11,6 +11,7 @@ export class HelloIonicPage {
   public stockSymbol = "MYM";
   public stockPrice = 1;
   public profit = "1";
+  public revenue = "1";
 
   getStockInfo(): void{
       this.googleFinaceService.getStockInfo(this.stockSymbol).subscribe(
@@ -23,13 +24,15 @@ export class HelloIonicPage {
 
                this.stockPrice = obj.l;
                this.profit ='$' + ( this.stockPrice*143108.00 - 21773.29).toLocaleString();
+               this.revenue = '$' + ( this.stockPrice*143108.00).toLocaleString();
             },
         err => console.error(err),
         );
   }
 
   constructor(private googleFinaceService: GoogleFinanceService) {
-    setInterval(this.getStockInfo.bind(this), 1000);
+    this.getStockInfo();
+    setInterval(this.getStockInfo.bind(this), 5000);
   }
 
 
