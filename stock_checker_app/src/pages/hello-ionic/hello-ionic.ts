@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { GoogleFinanceService } from '../../services/googleFinance';
-//import { Http } from '@angular/http';
+
+const NUMBER_OF_STOCK = 143108.00; // + 13940
+const COST_OF_STOCK = 21773.29; // + 8245.8
 
 @Component({
   selector: 'page-hello-ionic',
@@ -23,8 +25,8 @@ export class HelloIonicPage {
                let obj = JSON.parse(json);
 
                this.stockPrice = obj.l;
-               this.profit ='$' + ( this.stockPrice*143108.00 - 21773.29).toLocaleString();
-               this.revenue = '$' + ( this.stockPrice*143108.00).toLocaleString();
+               this.profit ='$' + ( this.stockPrice*NUMBER_OF_STOCK - COST_OF_STOCK).toLocaleString();
+               this.revenue = '$' + ( this.stockPrice*NUMBER_OF_STOCK).toLocaleString();
             },
         err => console.error(err),
         );
