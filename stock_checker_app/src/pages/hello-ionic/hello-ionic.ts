@@ -1,17 +1,21 @@
 import { Component } from '@angular/core';
 import { GoogleFinanceService } from '../../services/googleFinance';
 import { YahooFinanceService } from '../../services/yahooFinance';
+import { AlphaVantageFinanceService } from '../../services/alphaVantageFinance';
+import { FixerCurrencyService } from '../../services/fixerCurrency';
+import Rx from "rxjs/Rx";
 
-const NUMBER_OF_STOCK = 143108.00; // + 13940
-const COST_OF_STOCK = 21773.29; // + 8245.8
+const NUMBER_OF_STOCK = 157048.00;
+const COST_OF_STOCK = 29868.97;
 
 @Component({
   selector: 'page-hello-ionic',
   templateUrl: 'hello-ionic.html',
-  providers: [GoogleFinanceService, YahooFinanceService]
+  providers: [GoogleFinanceService, YahooFinanceService, AlphaVantageFinanceService, FixerCurrencyService]
 })
 export class HelloIonicPage {
-  public stockSymbol = "MYM.CN";
+  public stockSymbolCAD = "MYM.CN";
+  public stockSymbolUS = "MYMMF";
   public stockPrice = 1;
   public profit = "1";
   public revenue = "1";
@@ -19,7 +23,7 @@ export class HelloIonicPage {
   // Deprecated
   // Google Finance API no longer avaible to the public
   getStockInfoViaGoogle(): void{
-    this.googleFinaceService.getStockInfo(this.stockSymbol).subscribe(
+    this.googleFinaceService.getStockInfo(this.stockSymbolCAD).subscribe(
       data => {
              let json: string = data.text();
              json = json.replace('// [', "");
@@ -35,8 +39,10 @@ export class HelloIonicPage {
       );
 }
 
+  // Deprecated
+  // Yahoo Finance API no longer avaible to the public
   getStockInfoViaYahoo(): void{
-        this.yahooFinanceService.getStockInfo(this.stockSymbol).subscribe(
+        this.yahooFinanceService.getStockInfo(this.stockSymbolCAD).subscribe(
           success => {
             this.stockPrice = parseFloat(success.text());
             this.profit ='$' + ( this.stockPrice*NUMBER_OF_STOCK - COST_OF_STOCK).toLocaleString();
@@ -48,9 +54,35 @@ export class HelloIonicPage {
         ) 
   }
 
-  constructor(private googleFinaceService: GoogleFinanceService, private yahooFinanceService:YahooFinanceService) {
-    this.getStockInfoViaYahoo();
-    setInterval(this.getStockInfoViaYahoo.bind(this), 5000);
+
+  getStockInfoViaAlphaVantage(): void{
+
+    Rx.Observable.zip(this.alphaVantageFinanceService.getStockInfo(this.stockSymbolUS), this.fixerCurrencyService.getCADToUSDrate())
+    .subscribe(
+      success => {
+        let stockInfo = success[0].text();
+        let currencyInfo = success[1].text();
+
+        let jsonStockInfo = JSON.parse(stockInfo);
+        let jsonCurrencyInfo = JSON.parse(currencyInfo);
+
+        let USDtoCADrate = jsonCurrencyInfo.rates.CAD;        
+        let usStockPrice = ((jsonStockInfo["Time Series (1min)"][Object.keys(jsonStockInfo["Time Series (1min)"])[0]])["4. close"]);
+        this.stockPrice = +((usStockPrice * USDtoCADrate).toFixed(3));
+
+        this.profit ='$' + ( this.stockPrice*NUMBER_OF_STOCK - COST_OF_STOCK).toLocaleString();
+        this.revenue = '$' + ( this.stockPrice*NUMBER_OF_STOCK).toLocaleString();
+        
+      },
+      error => {
+        console.log("Error: " + error);
+      }
+    )
+}
+
+  constructor(private googleFinaceService: GoogleFinanceService, private yahooFinanceService:YahooFinanceService, private alphaVantageFinanceService:AlphaVantageFinanceService, private fixerCurrencyService:FixerCurrencyService) {
+    this.getStockInfoViaAlphaVantage();
+    setInterval(this.getStockInfoViaAlphaVantage.bind(this), 5000);
   }
 
 
