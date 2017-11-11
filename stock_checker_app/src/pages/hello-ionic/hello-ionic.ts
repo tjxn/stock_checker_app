@@ -57,6 +57,8 @@ export class HelloIonicPage {
 
   getStockInfoViaAlphaVantage(): void{
 
+    // Alpha Vantage looks up the US stock price
+    // We need to use the Fixer.io Api to look up the USD to CAD conversion
     Rx.Observable.zip(this.alphaVantageFinanceService.getStockInfo(this.stockSymbolUS), this.fixerCurrencyService.getCADToUSDrate())
     .subscribe(
       success => {
@@ -67,8 +69,8 @@ export class HelloIonicPage {
         let jsonCurrencyInfo = JSON.parse(currencyInfo);
 
         let USDtoCADrate = jsonCurrencyInfo.rates.CAD;        
-        let usStockPrice = ((jsonStockInfo["Time Series (1min)"][Object.keys(jsonStockInfo["Time Series (1min)"])[0]])["4. close"]);
-        this.stockPrice = +((usStockPrice * USDtoCADrate).toFixed(3));
+        let usStockPrice = ((jsonStockInfo["Time Series (1min)"][Object.keys(jsonStockInfo["Time Series (1min)"])[0]])["4. close"]); // Quick and dirty way of getting the first/latest time in the object, may not always work
+        this.stockPrice = +((usStockPrice * USDtoCADrate).toFixed(3)); // round to 3 decimal places
 
         this.profit ='$' + ( this.stockPrice*NUMBER_OF_STOCK - COST_OF_STOCK).toLocaleString();
         this.revenue = '$' + ( this.stockPrice*NUMBER_OF_STOCK).toLocaleString();
